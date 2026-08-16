@@ -282,26 +282,29 @@ textarea.finput:focus{border-color:var(--red);}
 
 <script>
 const PRICING_FORM = document.getElementById('pricing-form');
-const ACCESS_KEY = "08b8b2be-3357-427b-b801-ad4fcd160b43"; // same key as the lead form — emails alexander@ (cc admin@)
+// Formsubmit.co — no API key. Emails to alexander@ and cc's admin@ (free).
+// FIRST submission triggers a one-time activation email to alexander@ — click it once to go live.
+const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/alexander@innovadesignstudio.ca";
 PRICING_FORM.addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = PRICING_FORM.querySelector('.submit-btn');
   btn.disabled = true; btn.textContent = 'Sending…';
   const fd = new FormData(PRICING_FORM);
-  fd.append('access_key', ACCESS_KEY);
-  fd.append('from_name', 'Innova Pricing Form');
-  fd.append('subject', 'Contractor pricing submission — ' + (fd.get('Company') || fd.get('Contractor name') || 'Unknown'));
+  fd.append('_subject', 'Contractor pricing submission — ' + (fd.get('Company') || fd.get('Contractor name') || 'Unknown'));
+  fd.append('_cc', 'admin@innovadesignstudio.ca');
+  fd.append('_template', 'table');
+  fd.append('_captcha', 'false');
   try {
-    const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+    const res = await fetch(FORMSUBMIT_ENDPOINT, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
     const data = await res.json();
-    if (data.success) {
+    if (data.success === true || data.success === 'true') {
       PRICING_FORM.style.display = 'none';
       document.getElementById('paper-foot').style.display = 'none';
       document.getElementById('pricing-success').style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       btn.disabled = false; btn.textContent = 'Submit to Innova →';
-      console.error('Web3Forms error:', data);
+      console.error('Formsubmit error:', data);
       alert('Could not send the form: ' + (data.message || 'unknown error') + '\n\nPlease email your numbers to alexander@innovadesignstudio.ca instead.');
     }
   } catch (err) {
