@@ -1,0 +1,5 @@
+cd "D:/PEI AUGUST 2026/INNOVA DESIGN STUDIO/CALUDE CODE/PRICING CALCULATOR LEAD MAGNET/deploy"
+git init && git add . && git commit -m "Innova home cost calculator + contractor pricing form"
+git branch -M main
+git remote add origin https://github.com/<you>/<repo-name>.git
+git push -u origin main
